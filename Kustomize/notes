@@ -2,6 +2,54 @@ k8 native configuration management tool ,can be compared with ansible
 multiple namespaces 
 kustomize>>Template Free 
 
+
+
+why kustomize
+=================
+>helpful to deploy to multiple branches (**in terraform we have workspaces for this and terragrunt hierarchiy strucutre solves this)
+(we have dev,stage separate directiores-not tht bad though or different values.yaml for helm charts)>>this is not optimal for large workload,although it does the job for us!!
+kustomzie avoid code duplication
+kustomize is very simple,just plain yaml,helm is bit complex due to go templating languae
+
+Two components
+============
+base or base config>>identical(same) across environments,base can also take default values
+overlays >> each overlay for per enviroment
+
+helm>>package manager,confitionals,loops etc(kusotmize don't have this)
+
+folder structure
+===============
+k8s/
+├── base/
+│   ├── kustomization.yaml
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── configmap.yaml
+├── overlays/
+│   ├── dev/
+│   │   ├── kustomization.yaml
+│   │   └── configmap-dev.yaml
+│   ├── staging/
+│   │   ├── kustomization.yaml
+│   │   └── configmap-staging.yaml
+│   └── prod/
+│       ├── kustomization.yaml
+│       └── configmap-prod.yaml
+└── common/
+    ├── kustomization.yaml
+    └── namespace.yaml
+
+
+kustomize comes built-in with kubectl 
+
+helm>>go templating
+
+Kustomiazation.yaml file>1) list of k8 manifest to be managed
+2) transformation/customization to be applied 
+
+
+
 https://github.com/iam-veeramalla/kustomize-zero-to-hero
 
 Unlike Helm, Kustomize doesn’t use templating. This makes it easier to work with pure YAML files and avoid issues with templating languages.
@@ -33,8 +81,23 @@ kubectl kustomize base-folder
 
 kubectl apply -k overlays/dev -n dev  #-k for kustomization
 kubectl apply -k overlays/stage -n stage
+kubectl delete -k overlays/stage -n stage
+kubectl apply -k k8s/
+kubectl delete -k k8s/
+OR
+kustomize build k8s/ | kubectl apply -f - 
+kustomize build k8s/ | kubectl delete -f - 
 
-kustomize build
+controlplane ~/code/k8s ➜  pwd
+/root/code/k8s
+
+controlplane ~/code/k8s ➜  kubectl apply -k .
+-----------OR---------------
+controlplane ~/code ➜  kustomize build k8s/ | kubectl apply -f -
+
+
+kustomize build>>does NOT apply or deploy resources>just display yaml outputs
+-----------
 When you run kustomize build, it reads the kustomization.yaml file and applies the transformations and patches defined within it to generate the final output YAML, which can then be applied to a Kubernetes cluster using kubectl apply -f.
 
 
@@ -58,3 +121,4 @@ There are several types of patches in Kustomize:
 
 patchesStrategicMerge: This is a strategic merge patch that allows you to specify only the fields you want to update in an existing resource.
 patchesJson6902: This allows you to modify resources using JSON Patch (RFC 6902) syntax, which can target more specific changes like removing or replacing array elements.
+
