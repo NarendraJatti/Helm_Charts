@@ -1,0 +1,31 @@
+# kustomization.yaml
+resources:
+  - deployment.yaml
+  - service.yaml
+
+
+patchesStrategicMerge:
+  - deployment-patch.yaml
+
+namePrefix: dev-
+
+images:
+  - name: nginx
+    newName: mycompany/nginx
+    newTag: 1.21
+
+
+namespace: dev
+
+configMapGenerator:
+  - name: app-config
+    literals:
+      - ENV=dev
+      - LOG_LEVEL=debug
+
+secretGenerator:
+  - name: app-secret
+    literals:
+      - API_KEY=my-secret-key
+
+Kustomize is a powerful tool for customizing Kubernetes configurations. Using transformers like namePrefix, images, and others, you can manage different environments, modify images, update namespaces, and more without having to manually modify your resource YAML files.

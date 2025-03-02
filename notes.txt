@@ -1,0 +1,243 @@
+helm2 vs helm2
+But we are using helm3
+https://helm.sh/docs/intro/cheatsheet/
+https://github.com/norwoodj/helm-docs>>good
+https://github.com/helm-unittest/helm-unittest>>good
+https://www.youtube.com/watch?v=uQT4nVmKjrY>good 
+helm
+======
+package/release manager for k8>>
+
+installation>>release 
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install nginx-ingress ingress-nginx/ingress-nginx
+
+helm uses Go templating for refrenceing values in values.yaml file 
+
+The helm dependency list command is used to show the list of dependencies for a specific Helm chart. It outputs the dependencies declared in the chart's Chart.yaml file, which contains information about other charts that this chart relies on.
+
+helm template chart-name >>to validate helm module 
+The helm template command is used to render the Kubernetes manifests for a Helm chart locally without actually installing the chart into a Kubernetes cluster. This is useful for validating and debugging Helm templates before applying them.
+Custom Value Overrides: If you want to render a Helm chart using custom values from a file (e.g., my-values.yaml):
+helm template my-chart/ -f my-values.yaml
+helm template my-chart/ --set replicaCount=3
+helm install my-release my-chart/ --dry-run --debug
+helm template my-chart/ >> rendered-manifest.yaml
+
+
+
+helm install>>deploy only
+
+artifacthub.io 
+=================
+bitnami helm repo 
+
+helm show values chartname
+
+helm install wordpress
+helm upgrade wordpress
+helm rollback wordpress
+helm uninstall wordpress
+
+helm search hub wordpress
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+helm search repo wordpress
+helm repo list
+helm list>>check installed packages
+
+helm pull --untar bitnami/wordpress(only download-not install)
+
+helm install release-name chart-name
+helm install release-1 bitnami/wordpress
+
+helm install --verify chart-name
+
+helm create nginx-chart >>to create helm components files 
+cd 
+ls 
+
+helm search hub chart-name
+
+helm search hub consul | grep hashicorp
+
+helm repo update
+
+helm search repo eks
+
+demo or practice
+============
+16  helm list
+   17  helm repo list
+   18  kubectl config current-context
+   19  helm install nginx-ingress eks/nginx-ingress
+   20  helm upgrade -i appmesh-prometheus eks/appmesh-prometheus --namespace appmesh-system
+   21  helm repo update
+   22  helm search repo eks
+   23  helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+   24  helm repo update
+   25  helm repo list
+   26  helm install nginx-ingress ingress-nginx/ingress-nginx
+   27  history
+
+helm search repo ingress-nginx/ingress-nginx
+helm template nginx-ingress ingress-nginx/ingress-nginx
+helm get manifest nginx-ingress
+
+kubectl expose deployment nginx --port=80 --target-port=80 --name=nginx-service
+This creates a Kubernetes service that will expose the Nginx pod internally within the cluster.
+
+
+
+
+Before Installation: Use helm template or helm pull to inspect the chart templates locally.
+After Installation: Use helm get manifest to view the deployed resources, and kubectl get to
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+. helm search hub:
+Scope: Searches across the Artifact Hub, which contains Helm charts from multiple repositories and sources. Artifact Hub is a centralized place for discovering Helm charts, including those not yet added to your local repository list.
+
+helm search repo:
+Scope: Searches only within the Helm repositories that have been added to your local Helm client using helm repo add.
+
+helm install amaze-surf bitnami/apache
+
+helm repo list: Shows the repositories where Helm can fetch charts from (doesn’t include installed releases).
+helm list: Shows the installed Helm releases in your Kubernetes cluster.
+
+helm status amaze-surf
+
+helm pull bitnami/apache --untar
+
+Run the command helm list and check the number of installed nginx charts.
+Run the command helm uninstall <release-name> to uninstall the chart.
+
+helm repo remove hashicorp
+
+helm lint ./nginx-chart(char directory path)
+helm template ./nginx-chart(char directory path)(no release name)
+helm template ./nginx-chart(char directory path) --debug(no release name)
+helm template hello-word ./nginx-chart(char directory path)(with release name)
+helm template hello-word ./nginx-chart --dry-run(to catch k8 mainfests errors)
+
+
+packaging and signing charts before upload
+======================================
+helm package ./nginx-chart(char directory path)
+signing package
+================
+gpg --quick-generate-key "john smith"
+or gpg --full-generate-key "john smith"(for production)
+
+gpg --export-secret-keys >~/.gnupg/secring.gpg
+
+helm package --sign --key "john smith" --keyring ~/.gnupg/secring.gpg ./nginx-chart 
+
+gpg --list-keys
+
+sha256sum nginx-char-tar-filename
+
+helm verify chart-namt-tarfile
+
+
+gpg --export 'john smith' > mypublickey
+
+helm install --verify chart-name
+
+uploading charts
+=================
+helm repo index chart-name --url https://example.com(hub url)
+index.yaml 
+
+helm repo add our-cool-chart https://location-name-storage
+helm repo list
+helm install
+
+helm
+====
+package>modular>helm chart 
+version controll back easy >>with helm charts 
+rollback>using helm revisons
+paramters
+multi environment deployment 
+
+chart.yaml>meta
+charts folder>dependencies info 
+templates folder > deployment,service,etc
+release>app name ,helm install release-name 
+values.yaml >values 
+_helpers.yaml >>define resusable functions
+tests folder>pod check app >testing pod >to check app 
+
+
+In Helm charts, the syntax {{ .Values.Name }} is not Jinja2 templating but Helm's own templating engine based on Go templates.
+
+Here's an explanation of the components:
+
+{{ ... }}: This is the syntax for Go templates, which Helm uses to render dynamic content.
+.Values: Refers to the values.yaml file in Helm. This is where configuration values for the chart are defined. You can override these values during installation or upgrade.
+.Values.Name: Refers to the specific Name key in the values.yaml file.
+
+important
+==========
+Example (Helm - Go Templates):
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.Name | quote }}
+
+Example (Ansible - Jinja2 Templates):
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ Name }}"
+
+Helm: In Go templates, you access values using dot notation (.Values.Name) and use Go template functions like quote, toYaml, etc.
+Ansible: In Jinja2, variables are referenced directly ({{ Name }}), and filters like quote or to_yaml are used to modify values.
+
+Helm: Uses values.yaml to define values passed into templates (.Values), and context is more hierarchical. You access fields like .Values.Name, .Chart.Name, .Release.Name, etc.
+Ansible: Uses playbook variables, host variables, and other context-specific variables like {{ inventory_hostname }}, {{ ansible_facts }}, etc. The variable system in Ansible is richer and allows more flexible scoping.
+
+Summary of Key Differences:
+Aspect	Helm (Go Templates)	Ansible (Jinja2)
+Language	Go templates	Python-based Jinja2
+Syntax	.Values.Name, {{ .Release.Name }}	{{ Name }}, {{ ansible_facts }}
+Extensibility	Limited to Go template and Helm functions	Extensible with custom filters and plugins
+Functionality	Simpler, fewer built-in functions	More advanced functions and logic
+Use Cases	Kubernetes-specific Helm charts	Ansible playbooks, configurations, and more
+Helm’s Go templates are simpler and designed for Kubernetes manifests, while Ansible’s Jinja2 is more flexible and powerful for a wide range of automation tasks.
+
+Give tw0 spaces in double curly bracker {{  .}} for helm charts 
+
+helm list >>helm deployments list
+helm upgrade release-name >>to apply changes(values.yaml)
+, to apply changes to a Helm chart (such as the modifications in your YAML files), you need to run the helm upgrade command.
+helm upgrade <release-name> <chart-path> --values <values-file-path>
+helm status <release-name>
+helm rollback release-name revison-number 
+helm upgrade release-name . --set replicaCount=10(giving run time values)
+helm histoy release-name 
+
+Inspect Changes in a Specific Revision: To view the detailed manifest (YAML) of a specific revision, use:
+helm get manifest <release-name> --revision <revision-number>
+
+Compare Two Revisions: Helm itself does not have a built-in command to directly compare two revisions, but you can use helm get manifest to retrieve the manifests of both revisions and then compare them using standard diff tools.
+helm get manifest my-app --revision 2 > revision-2.yaml
+helm get manifest my-app --revision 3 > revision-3.yaml
+diff revision-2.yaml revision-3.yaml
+
+
+helm repo add: This command is used to add a Helm chart repository, allowing you to fetch charts from that repository.
+helm install: This command is used to install a Helm chart onto your Kubernetes cluster, creating a release.
+The helm install command is used to deploy a Helm chart (from a repository or a local directory) onto your Kubernetes cluster.
+
+helm uninstall release-name>>remvoe deployment,svc everything 
+
+important>>fore deploying different environment >create different values.yaml files
+helm install release-name . -f values.yaml -n ns-name
+helm install <release-name> <chart-name> --values <file1.yaml> --values <file2.yaml>
+helm upgrade <release-name> <chart-name> --values <file1.yaml> --values <file2.yaml>
+helm install my-app ./my-chart --values production-values.yaml --values secret-values.yaml

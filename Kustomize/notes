@@ -1,0 +1,60 @@
+k8 native configuration management tool ,can be compared with ansible 
+multiple namespaces 
+kustomize>>Template Free 
+
+https://github.com/iam-veeramalla/kustomize-zero-to-hero
+
+Unlike Helm, Kustomize doesn’t use templating. This makes it easier to work with pure YAML files and avoid issues with templating languages.
+
+Real-World Example:
+In real-world scenarios, you might have multiple environments (development, staging, production), and you can create overlays with different patches for each environment.
+
+
+
+kubectl apply 
+
+helm 
+=========
+# Deploying to Environment 1
+helm install my-release-env1 my-chart-path --values value1.yaml
+
+# Deploying to Environment 2
+helm install my-release-env2 my-chart-path --values value2.yaml
+
+# Deploying to Environment 3
+helm install my-release-env3 my-chart-path --values value3.yaml
+
+helm create my-nginx-chart
+
+helm install my-nginx-release ./my-nginx-chart --values value1.yaml # chart directory (my-nginx-chart):
+
+
+kubectl kustomize base-folder  
+
+kubectl apply -k overlays/dev -n dev  #-k for kustomization
+kubectl apply -k overlays/stage -n stage
+
+kustomize build
+When you run kustomize build, it reads the kustomization.yaml file and applies the transformations and patches defined within it to generate the final output YAML, which can then be applied to a Kubernetes cluster using kubectl apply -f.
+
+
+To apply the generated output to your Kubernetes cluster, you can pipe the result directly into kubectl:
+kustomize build . | kubectl apply -f -
+
+
+In Kubernetes, a Kustomization (kustomize) is a tool used to manage and customize Kubernetes YAML manifests without having to manually edit them. You can create overlays to modify base configurations like adding prefixes, changing image tags, or setting resource configurations. Transformers in Kustomize allow you to manipulate resources in a reusable way.
+
+Transformed Output:
+
+The deployment nginx would be transformed to dev-nginx.
+The service nginx would also be transformed to dev-nginx.
+
+The image nginx:latest would be transformed to mycompany/nginx:1.21.
+
+
+In Kustomize, patches allow you to modify specific fields in Kubernetes resource manifests without needing to modify the entire YAML file. Patches can be applied to resources to make targeted changes, such as updating the number of replicas, changing environment variables, or overriding specific configurations.
+
+There are several types of patches in Kustomize:
+
+patchesStrategicMerge: This is a strategic merge patch that allows you to specify only the fields you want to update in an existing resource.
+patchesJson6902: This allows you to modify resources using JSON Patch (RFC 6902) syntax, which can target more specific changes like removing or replacing array elements.
