@@ -1,0 +1,23 @@
+#used for more specific or targeted operations
+#below is example for Json 6902 patch example,another type is strategic merge patch 
+patches: 
+  - target:
+      kind: Deployment 
+      name: my-app # old value 
+
+    patch: |- ##inline patch update(for few pathces),another type is separatefile for larger patches
+      - op: replace 
+        path: /metadata/name
+        value: my-web-application #new value to added 
+
+
+#below is example for strategic merge path 
+#below is almost the regural k8 yaml ,but we need to copy the original k8 file value to the value to be updated!!
+patches:
+  - patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: my-app
+    spec:
+      replicas: 5 #value to updated,so copied untill replica,if want some value below then copy upto that value

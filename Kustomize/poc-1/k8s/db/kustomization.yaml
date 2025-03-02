@@ -1,12 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-resources:
+resources: #importing below resources
   - db-depl.yaml
   - db-service.yaml
   - db-config.yaml
 
-commonLabels:
+commonLabels:   
   company: Bayer 
 
 nameSuffix: - db

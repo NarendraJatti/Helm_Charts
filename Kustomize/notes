@@ -2,6 +2,15 @@ k8 native configuration management tool ,can be compared with ansible
 multiple namespaces 
 kustomize>>Template Free 
 
+kustomize version
+v5.5.0
+
+
+kubectl apply -k /root/code/k8s/overlays/staging
+
+kustomization is all about intiution or hierarch of the resources defined.it gives
+lot of flextiblity-no strict rules..all about intution or visualtion of resoreces
+
 https://www.youtube.com/watch?v=Ks0PMh70GTY
 
 
@@ -18,6 +27,8 @@ kustomize is very simple,just plain yaml,helm is bit complex due to go templatin
 
 Two components
 ============
+Kustomize has the concepts of bases and overlays.
+
 base or base config>>identical(same) across environments,base can also take default values
 overlays >> each overlay for per enviroment
 
@@ -26,12 +37,12 @@ helm>>package manager,confitionals,loops etc(kusotmize don't have this)
 folder structure
 ===============
 k8s/
-├── base/
+├── base/ #here shared or default config resides
 │   ├── kustomization.yaml
 │   ├── deployment.yaml
 │   ├── service.yaml
 │   └── configmap.yaml
-├── overlays/
+├── overlays/ #environment details or divisons
 │   ├── dev/
 │   │   ├── kustomization.yaml
 │   │   └── configmap-dev.yaml
@@ -130,3 +141,17 @@ There are several types of patches in Kustomize:
 patchesStrategicMerge: This is a strategic merge patch that allows you to specify only the fields you want to update in an existing resource.
 patchesJson6902: This allows you to modify resources using JSON Patch (RFC 6902) syntax, which can target more specific changes like removing or replacing array elements.
 
+patches
+=========
+modify k8 manifests>>Example >updating replica set in a specific deployment
+
+overlays
+=============
+dev/kustomization.yaml
+bases:
+  - ../../base
+
+patch: |-
+      - op: replace 
+       path: /spec/replcias
+       value: 2

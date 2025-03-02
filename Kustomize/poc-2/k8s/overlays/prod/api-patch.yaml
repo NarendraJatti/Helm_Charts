@@ -1,0 +1,32 @@
+##The original api-deployment uses an image of nginx but in the prod overlay it gets patched to memcached as shown below:
+
+##The prod overlay patch for the api-deployment does not modify the replicas property, so it defaults to the value set in base/
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mongo
+  template:
+    metadata:
+      labels:
+        component: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-creds
+                  key: username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: db-creds
+                  key: password
