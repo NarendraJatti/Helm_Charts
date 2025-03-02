@@ -2,7 +2,12 @@ k8 native configuration management tool ,can be compared with ansible
 multiple namespaces 
 kustomize>>Template Free 
 
+https://www.youtube.com/watch?v=Ks0PMh70GTY
 
+
+two types of kustomization.yaml files
+1)defined at the root/parent directory
+2)defined the sub/child directories
 
 why kustomize
 =================
@@ -48,6 +53,9 @@ helm>>go templating
 Kustomiazation.yaml file>1) list of k8 manifest to be managed
 2) transformation/customization to be applied 
 
+
+Transformers
+=================
 
 
 https://github.com/iam-veeramalla/kustomize-zero-to-hero

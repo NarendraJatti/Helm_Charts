@@ -17,3 +17,14 @@ resources:
 #   - message-broker/rabbitmq-service.yaml
 #   - nginx/nginx-depl.yaml
 #   - nginx/nginx-service.yaml
+
+commonLabels:
+  department: Engineering 
+
+namespace: debugging
+
+namePrefix: Bayer-apac-
+
+
+commonAnnotations:
+  logging: verbose 
