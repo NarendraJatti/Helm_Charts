@@ -1,5 +1,8 @@
 bases:
   - ../../base
 
+components:
+  - ../../components/auth
+
 patches:
   - api-patch.yaml

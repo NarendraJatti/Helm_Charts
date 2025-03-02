@@ -63,6 +63,7 @@ helm>>go templating
 
 Kustomiazation.yaml file>1) list of k8 manifest to be managed
 2) transformation/customization to be applied 
+3)it imports or reference the files or resources to be used th
 
 
 Transformers
@@ -143,6 +144,7 @@ patchesJson6902: This allows you to modify resources using JSON Patch (RFC 6902)
 
 patches
 =========
+overrides base config mainifest file values
 modify k8 manifests>>Example >updating replica set in a specific deployment
 
 overlays
@@ -155,3 +157,49 @@ patch: |-
       - op: replace 
        path: /spec/replcias
        value: 2
+
+
+components
+===============
+resuable pieces of configuration logic(resource+patches) that can be
+included in mutiple overlays.components is useful to enable 
+features to enable in "subset of overlays".
+for subset overlays,putting in base floder -does NOT work..bcz all the 
+overlays(subset) will inherit base folder mainifests.
+overlays can import compents to use them in overlays
+Components are like reusable building blocks that can be included in multiple environments (like base and overlays). They are particularly useful when you have reusable parts of your configuration that you want to apply to multiple environments.
+.
+├── base
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── kustomization.yaml
+├── overlays
+│   ├── dev
+│   │   ├── kustomization.yaml
+│   │   └── patches.yaml #overides base config values
+│   ├── prod
+│   │   ├── kustomization.yaml
+│   │   └── patches.yaml
+│   └── staging
+│       ├── kustomization.yaml
+│       └── patches.yaml
+└── components
+    ├── logging
+    │   ├── kustomization.yaml
+    │   └── logging-config.yaml
+    ├── monitoring
+    │   ├── kustomization.yaml
+    │   └── prometheus-config.yaml
+    └── security
+        ├── kustomization.yaml
+        └── network-policy.yaml
+
+Garbage collection
+================
+a brand new configmap is generated everytime we make changes 
+to secret/configmap>>leads to stale configmaps
+--prune flag while kubectl apply,unsed configmaps will be pruned
+
+imperative commands
+===================
+using edit subcommand

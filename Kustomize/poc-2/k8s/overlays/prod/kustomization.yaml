@@ -1,8 +1,17 @@
 bases:
   - ../../base
 
+components:
+  - ../../components/auth
+  - ../../components/logging
+
 resources:
   - redis-depl.yaml
+
+# secretGenerator:
+#   - name: db-creds
+#     literals:
+#       - password=password1
 
 patches:
   - api-patch.yaml
