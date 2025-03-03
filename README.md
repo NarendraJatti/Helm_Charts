@@ -1,5 +1,5 @@
-# Helm_Charts
-Helm Charts simplifies K8 Deployments, Rollbacks etc 
+# Helm_Charts and Kustomize
+Helm Charts and Kustomize simplifies K8 Deployments, Rollbacks etc 
 
 #Kustomization
 k8s/
